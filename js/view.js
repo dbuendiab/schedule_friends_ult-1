@@ -2,6 +2,7 @@ class View {
     constructor(parent) {
         this.root = parent
         this.newFriendAddedEvent = new Event()
+        this.deleteFriendEvent = new Event()
     }
 
     newFriendFormShow() {
@@ -61,6 +62,16 @@ class View {
             note.textContent = "Nota: " + f.note
             const history = document.createElement("div")
             history.textContent = "Historia: " + f.history
+            const btnDelete = document.createElement("button")
+            const idAtt = document.createAttribute("id")
+            idAtt.value = "btnDelete"
+            btnDelete.setAttributeNode(idAtt)
+            btnDelete.textContent = "delete"
+
+            btnDelete.addEventListener('click', () => {
+                this.deleteFriendEvent.trigger(f.name)
+            })
+
 
             elem.appendChild(name)
             elem.appendChild(date)
@@ -68,6 +79,7 @@ class View {
             elem.appendChild(periodicity)
             elem.appendChild(note)
             elem.appendChild(history)
+            elem.appendChild(btnDelete)
 
             this.root.appendChild(elem)
         }

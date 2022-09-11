@@ -18,6 +18,22 @@ class Friends {
         localStorage.setItem("friends", JSON.stringify(this.friends))
         this.wereChangesEvent.trigger(this.getAll())
     }
+//----------------------------------------------------------------------------------
+    deleteFriend(name) {
+        alert(this.friends.length)
+        for (let i = 0; i < 10; i++) {
+            if (name === this.friends[i].name){
+
+                this.friends.splice(i, 1)
+                this.wereChangesEvent.trigger(this.getAll())
+                break
+            }
+        }
+
+
+    }
+
+//-------------------------------------------------------------------------------------
 
     getAll() {
         return this.friends
