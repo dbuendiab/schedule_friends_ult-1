@@ -69,7 +69,11 @@ class View {
             btnDelete.textContent = "delete"
 
             btnDelete.addEventListener('click', () => {
-                this.deleteFriendEvent.trigger(f.name)
+
+               if (window.confirm("do you want to delete friend?")){
+                   this.deleteFriendEvent.trigger(f.name)
+               }
+
             })
 
 

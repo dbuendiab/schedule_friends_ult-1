@@ -21,7 +21,7 @@ class Friends {
     }
 //----------------------------------------------------------------------------------
     deleteFriend(name) {
-        alert(this.friends.length)
+
         for (let i = 0; i < 10; i++) {
             if (name === this.friends[i].name){
 
