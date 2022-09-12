@@ -9,13 +9,14 @@
 
 class Friends {
     constructor() {
-        this.friends = JSON.parse(localStorage.getItem("friends")) || []
-        this.wereChangesEvent = new Event();
+        this.friends = this.loadAll()
+        this.wereChangesEvent = new Event()
     }
 
     newFriend(data) {
         this.friends.push(new Friend(data.name, data.date, data.importance, data.periodicity, data.note))
-        localStorage.setItem("friends", JSON.stringify(this.friends))
+        this.saveAll()
+
         this.wereChangesEvent.trigger(this.getAll())
     }
 //----------------------------------------------------------------------------------
@@ -25,15 +26,22 @@ class Friends {
             if (name === this.friends[i].name){
 
                 this.friends.splice(i, 1)
+                this.saveAll()
                 this.wereChangesEvent.trigger(this.getAll())
                 break
             }
         }
-
-
     }
 
 //-------------------------------------------------------------------------------------
+
+    loadAll() {
+        return JSON.parse(localStorage.getItem("friends")) || []
+    }
+
+    saveAll () {
+        localStorage.setItem("friends", JSON.stringify(this.friends))
+    }
 
     getAll() {
         return this.friends
