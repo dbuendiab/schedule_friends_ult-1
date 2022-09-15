@@ -19,13 +19,38 @@ class Friends {
 
         this.wereChangesEvent.trigger(this.getAll())
     }
+
 //----------------------------------------------------------------------------------
     deleteFriend(name) {
 
-        for (let i = 0; i < 10; i++) {
-            if (name === this.friends[i].name){
+        for (let i = 0; i < this.friends.length; i++) {
+            if (name === this.friends[i].name) {
 
                 this.friends.splice(i, 1)
+                this.saveAll()
+                this.wereChangesEvent.trigger(this.getAll())
+                break
+            }
+        }
+    }
+
+//-------------------------------------------------------------------------------------
+    confirmDate(params) {
+
+        function addDays(date, days) {
+            let result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        const {name, date, note} = params
+
+        for (let i = 0; i < this.friends.length; i++) {
+            if (name === this.friends[i].name) {
+
+                this.friends[i].history.add(this.friends[i].date, this.friends[i].note, true)
+                this.friends[i].date = addDays(this.friends[i].date, this.friends[i].periodicity)
+
                 this.saveAll()
                 this.wereChangesEvent.trigger(this.getAll())
                 break
@@ -39,7 +64,7 @@ class Friends {
         return JSON.parse(localStorage.getItem("friends")) || []
     }
 
-    saveAll () {
+    saveAll() {
         localStorage.setItem("friends", JSON.stringify(this.friends))
     }
 
@@ -54,8 +79,8 @@ class Friend {
     constructor(name, date, importance, periodicity, note) {
         this.name = name
         this.date = date
-        this.importance = importance
-        this.periodicity = periodicity
+        this.importance = parseInt(importance)
+        this.periodicity =  parseInt(periodicity)
         this.note = note
         this.history = new History()
     }
@@ -68,29 +93,28 @@ class History {
         this.history = []
     }
 
-    /*
-        add = function(date, note, state) {
-            this.history.push(new HistoryNote(date, note, state))
-        }
+    add = function (date, note, state) {
+        this.history.push(new HistoryNote(date, note, state))
+    }
 
-        delete = (date) => {
-            for (const [i, histNote] of this.history) {
-                if (histNote.date === date) {
-                    this.history.splice(i, 1)
-                    break
-                }
+    delete = function (date) {
+        for (const [i, histNote] of this.history) {
+            if (histNote.date === date) {
+                this.history.splice(i, 1)
+                break
             }
         }
-    */
+    }
+
 }
 
 // --------------------------------------------------------------------------------
 
-/*
+
 class HistoryNote {
     constructor(date, note, state) {
         this.date = date
         this.note = note
         this.state = state
     }
-}*/
+}

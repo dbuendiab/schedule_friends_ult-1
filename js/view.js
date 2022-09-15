@@ -3,6 +3,7 @@ class View {
         this.root = parent
         this.newFriendAddedEvent = new Event()
         this.deleteFriendEvent = new Event()
+        this.confirmDateEvent = new Event()
     }
 
     newFriendFormShow() {
@@ -62,10 +63,12 @@ class View {
             note.textContent = "Nota: " + f.note
             const history = document.createElement("div")
             history.textContent = "Historia: " + f.history
+ //----------------------------------------------------------------------------------- delete btn
             const btnDelete = document.createElement("button")
             const idAtt = document.createAttribute("id")
             idAtt.value = "btnDelete"
             btnDelete.setAttributeNode(idAtt)
+            btnDelete.className = "friendButton"
             btnDelete.textContent = "delete"
 
             btnDelete.addEventListener('click', () => {
@@ -75,6 +78,27 @@ class View {
                }
 
             })
+//------------------------------------------------------------------------------------- confirm btn
+            const btnConfirm = document.createElement("button")
+            btnConfirm.id = "btnConfirm"
+            btnConfirm.className = "friendButton"
+            btnConfirm.textContent = "confirm date"
+
+            btnConfirm.addEventListener("click", ()=> {
+
+                if (window.confirm("do you want to confirm?")){
+
+                    const params = {
+                        name: f.name,
+                        date: f.date,
+                        note: f.note
+                    }
+                    this.confirmDateEvent.trigger(params)
+                }
+
+
+            })
+//-------------------------------------------------------------------------------------
 
 
             elem.appendChild(name)
@@ -84,6 +108,7 @@ class View {
             elem.appendChild(note)
             elem.appendChild(history)
             elem.appendChild(btnDelete)
+            elem.appendChild(btnConfirm)
 
             this.root.appendChild(elem)
         }

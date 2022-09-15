@@ -13,6 +13,10 @@ class Controller {
         this.view.deleteFriendEvent.addListener((name) => {
             this.model.deleteFriend(name)
         })
+        this.view.confirmDateEvent.addListener((params)=>{
+
+            this.model.confirmDate(params)
+        })
 
 
 
