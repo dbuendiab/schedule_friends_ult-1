@@ -33,7 +33,6 @@ class View {
             this.root.removeChild(form)
             this.newFriendAddedEvent.trigger(data)
         })
-
         const btnCancel = document.getElementById("cancel")
         btnCancel.addEventListener("click", () => {
             this.root.removeChild(form)
@@ -46,8 +45,7 @@ class View {
         while (this.root.firstChild) {
             this.root.removeChild(this.root.lastChild);
         }
-
-        for(const f of friends) {
+        for (const f of friends) {
             const elem = document.createElement("div")
             elem.className = "container"
 
@@ -61,9 +59,9 @@ class View {
             periodicity.textContent = "Periodicidad: " + f.periodicity
             const note = document.createElement("div")
             note.textContent = "Nota: " + f.note
-            const history = document.createElement("div")
-            history.textContent = "Historia: " + f.history
- //----------------------------------------------------------------------------------- delete btn
+            const historyBox = document.createElement("div")
+            //history.textContent = "Historia: " + f.history
+            //----------------------------------------------------------------------------------- delete btn
             const btnDelete = document.createElement("button")
             const idAtt = document.createAttribute("id")
             idAtt.value = "btnDelete"
@@ -72,11 +70,9 @@ class View {
             btnDelete.textContent = "delete"
 
             btnDelete.addEventListener('click', () => {
-
-               if (window.confirm("do you want to delete friend?")){
-                   this.deleteFriendEvent.trigger(f.name)
-               }
-
+                if (window.confirm("do you want to delete friend?")) {
+                    this.deleteFriendEvent.trigger(f.name)
+                }
             })
 //------------------------------------------------------------------------------------- confirm btn
             const btnConfirm = document.createElement("button")
@@ -84,10 +80,8 @@ class View {
             btnConfirm.className = "friendButton"
             btnConfirm.textContent = "confirm date"
 
-            btnConfirm.addEventListener("click", ()=> {
-
-                if (window.confirm("do you want to confirm?")){
-
+            btnConfirm.addEventListener("click", () => {
+                if (window.confirm("do you want to confirm?")) {
                     const params = {
                         name: f.name,
                         date: f.date,
@@ -95,20 +89,73 @@ class View {
                     }
                     this.confirmDateEvent.trigger(params)
                 }
-
-
             })
 //-------------------------------------------------------------------------------------
 
+            const btnShowHistory = document.createElement("button")
+            btnShowHistory.id = "showHistory"
+            btnShowHistory.className = "showBtn"
+            btnShowHistory.textContent = "show history"
+
+            btnShowHistory.addEventListener('click', () => {
+
+                if (btnShowHistory.className === "showBtn") {
+
+                    if (f.history.history.length === 0){
+                        return
+                    }
+
+                    let booleanToggler= true
+
+                    for (const h of f.history.history) {
+
+                        const {date, note, state} = h
+
+                        const elem = document.createElement("div")
+                        elem.className = "containerHistory"
+                        if (booleanToggler){
+                            elem.classList.add("evenRow")
+                        }
+
+                        booleanToggler = !booleanToggler
+
+
+                        const dateBox = document.createElement("div")
+                        dateBox.textContent = "date" + date
+                        const noteBox = document.createElement("div")
+                        noteBox.textContent = "note" + note
+
+
+//TODO add delete btn for elem
+
+
+                        historyBox.appendChild(elem)
+
+                        elem.appendChild(dateBox)
+                        elem.appendChild(noteBox)
+                    }
+                    btnShowHistory.textContent = "hide history"
+                    btnShowHistory.className = "hideBtn"
+                } else {
+
+                    historyBox.innerHTML = ""
+                    btnShowHistory.textContent = "show history"
+                    btnShowHistory.className = "showBtn"
+
+                }
+            })
+
+//-------------------------------------------------------------------------------------
 
             elem.appendChild(name)
             elem.appendChild(date)
             elem.appendChild(importance)
             elem.appendChild(periodicity)
             elem.appendChild(note)
-            elem.appendChild(history)
+            elem.appendChild(historyBox)
             elem.appendChild(btnDelete)
             elem.appendChild(btnConfirm)
+            elem.appendChild(btnShowHistory)
 
             this.root.appendChild(elem)
         }

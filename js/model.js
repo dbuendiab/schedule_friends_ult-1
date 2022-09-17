@@ -44,30 +44,37 @@ class Friends {
         }
 
         const {name, date, note} = params
-
         for (let i = 0; i < this.friends.length; i++) {
             if (name === this.friends[i].name) {
-
                 this.friends[i].history.add(this.friends[i].date, this.friends[i].note, true)
-                this.friends[i].date = addDays(this.friends[i].date, this.friends[i].periodicity)
-
+                const intermediateProcessingDate = addDays(this.friends[i].date, this.friends[i].periodicity)
+                this.friends[i].date = intermediateProcessingDate.toISOString().substring(0, 10)
                 this.saveAll()
                 this.wereChangesEvent.trigger(this.getAll())
                 break
             }
         }
     }
-
 //-------------------------------------------------------------------------------------
-
     loadAll() {
-        return JSON.parse(localStorage.getItem("friends")) || []
-    }
 
+        const hola = JSON.parse(localStorage.getItem("friends")) || []
+        const friends = []
+
+        for (const h of hola ) {
+            const {name, date, importance, periodicity, note, history} = h
+            const friend = new Friend(name, date, importance, periodicity, note)
+            for (const hist of history.history){
+                const  {date, note, state} = hist
+                friend.history.add(date, note, state)
+            }
+            friends.push(friend)
+        }
+        return friends;
+    }
     saveAll() {
         localStorage.setItem("friends", JSON.stringify(this.friends))
     }
-
     getAll() {
         return this.friends
     }
@@ -92,11 +99,9 @@ class History {
     constructor() {
         this.history = []
     }
-
     add = function (date, note, state) {
         this.history.push(new HistoryNote(date, note, state))
     }
-
     delete = function (date) {
         for (const [i, histNote] of this.history) {
             if (histNote.date === date) {
@@ -105,11 +110,9 @@ class History {
             }
         }
     }
-
 }
 
 // --------------------------------------------------------------------------------
-
 
 class HistoryNote {
     constructor(date, note, state) {

@@ -1,5 +1,20 @@
 
 
+.containerHistory {
+
+
+
+    background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(3,255,218,1) 22%,
+    rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);
+}
+
+.evenRow {
+
+
+
+    background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(188,3,255,1) 22%,
+    rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);
+}
 
 
 
