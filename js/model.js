@@ -85,7 +85,7 @@ class Friends {
 class Friend {
     constructor(name, date, importance, periodicity, note) {
         this.name = name
-        this.date = date
+        this.date = (new Date(date)).toISOString().substring(0, 10)
         this.importance = parseInt(importance)
         this.periodicity =  parseInt(periodicity)
         this.note = note
