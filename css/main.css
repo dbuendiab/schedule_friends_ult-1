@@ -1,4 +1,57 @@
+nav li {
+    display: inline-block;
+    list-style: none;
+    border: 1px solid crimson;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
 
+nav li:hover {
+    color: white;
+    background-color: crimson;
+}
+
+.container {
+    flex-direction: row;
+    display: flex;
+    background-color: beige;
+    justify-content: space-between;
+    align-content: space-between;
+    padding: 10px;
+}
+
+.container.even {
+    background-color: cornsilk;
+}
+
+.container:hover {
+    background-color: antiquewhite;
+}
+
+.container .buttonsBox {
+    visibility: hidden;
+}
+
+.container:hover .buttonsBox {
+    visibility: visible;
+}
+
+.buttonsBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-content: space-between;
+}
+
+.dataBox {
+    border: 1px solid crimson;
+}
+
+.buttonsBox > button {
+    margin: 5px;
+    width: 150px;
+}
 
 .containerHistory {
 

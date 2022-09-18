@@ -14,10 +14,29 @@ class Friends {
     }
 
     newFriend(data) {
-        this.friends.push(new Friend(data.name, data.date, data.importance, data.periodicity, data.note))
+        const {name, date, importance, periodicity, note} = data
+        const elem = this.exists(name)
+        if (elem) {
+            //elem.name = name
+            elem.date = date
+            elem.importance = importance
+            elem.periodicity = periodicity
+            elem.note = note
+        } else {
+            this.friends.push(new Friend(name, date, importance, periodicity, note))
+        }
         this.saveAll()
 
         this.wereChangesEvent.trigger(this.getAll())
+    }
+
+    exists(name) {
+        for (const f of this.friends) {
+            if (f.name === name) {
+                return f
+            }
+        }
+        return null
     }
 
 //----------------------------------------------------------------------------------
@@ -46,8 +65,8 @@ class Friends {
         const {name, date, note} = params
         for (let i = 0; i < this.friends.length; i++) {
             if (name === this.friends[i].name) {
-                this.friends[i].history.add(this.friends[i].date, this.friends[i].note, true)
-                const intermediateProcessingDate = addDays(this.friends[i].date, this.friends[i].periodicity)
+                this.friends[i].history.add(date, note, true)
+                const intermediateProcessingDate = addDays(date, this.friends[i].periodicity)
                 this.friends[i].date = intermediateProcessingDate.toISOString().substring(0, 10)
                 this.saveAll()
                 this.wereChangesEvent.trigger(this.getAll())

@@ -6,20 +6,32 @@ class View {
         this.confirmDateEvent = new Event()
     }
 
-    newFriendFormShow() {
+    newFriendFormShow(update_data = undefined) {
         const form = document.createElement("div")
         form.className = "new-friend"
+
+        let name = "", date = "", importance = "", periodicity = "", note = "", type="new"
+
+        if (update_data) {
+            name = update_data.name
+            date = update_data.date
+            importance = update_data.importance
+            periodicity = update_data.periodicity
+            note = update_data.note
+            type = update_data.type
+        }
+
         // Necesito input boxes para name, date, importance, periodicity, note
         form.innerHTML = `
-        <label>Nombre: <input type="text" id="name"></label>
-        <label>Prox. cita: <input type="date" id="date"></label>
-        <label>Importancia: <input type="range" min="0" max="100" id="importance"></label>
-        <label>Periodicidad: <input type="number" min="1" id="periodicity" value="7"></label>
-        <label>Notas: <textarea id="note"></textarea></label>
+        <label>Nombre: <input type="text" id="name" ${type !== "new"? "disabled": ""} value="${name}"></label>
+        <label>Prox. cita: <input type="date" id="date" value="${date}"></label>
+        <label>Importancia: <input type="range" min="0" max="100" id="importance" value="${importance}"></label>
+        <label>Periodicidad: <input type="number" min="1" id="periodicity" value=" value="${periodicity || 7}""></label>
+        <label>Notas: <textarea id="note">${note}</textarea></label>
         <button id="accept">Aceptar</button>
         <button id="cancel">Cancelar</button>
         `
-        this.root.appendChild(form)
+        this.root.prepend(form)
 
         const btnAccept = document.getElementById("accept")
         btnAccept.addEventListener("click", () => {
@@ -40,14 +52,33 @@ class View {
         })
     }
 
+    #today() {
+        const hoy = new Date()
+        hoy.setHours(0, 0, 0, 0)
+        return hoy
+    }
+
     redraw(friends) {
         // Eliminar todos los nodos
         while (this.root.firstChild) {
             this.root.removeChild(this.root.lastChild);
         }
+
+        let evenBool = false
+
         for (const f of friends) {
+
             const elem = document.createElement("div")
             elem.className = "container"
+            if (evenBool) {
+                elem.classList.add("even")
+            }
+            evenBool = !evenBool
+
+            const elemData = document.createElement("div")
+            elemData.className = "dataBox"
+            const elemBtns = document.createElement("div")
+            elemBtns.className = "buttonsBox"
 
             const name = document.createElement("div")
             name.textContent = "Nombre: " + f.name
@@ -61,11 +92,28 @@ class View {
             note.textContent = "Nota: " + f.note
             const historyBox = document.createElement("div")
             //history.textContent = "Historia: " + f.history
+
+            //----------------------------------------------------------------------------------- update btn
+            const btnUpdate = document.createElement("button")
+            btnUpdate.id = "btnUpdate"
+            btnUpdate.className = "friendButton"
+            btnUpdate.textContent = "update"
+
+            btnUpdate.addEventListener('click', () => {
+                this.newFriendFormShow({
+                    type: "update",
+                    name: f.name,
+                    date: f.date,
+                    importance: f.importance,
+                    periodicity: f.periodicity,
+                    note: f.note
+                })
+            })
+
             //----------------------------------------------------------------------------------- delete btn
+
             const btnDelete = document.createElement("button")
-            const idAtt = document.createAttribute("id")
-            idAtt.value = "btnDelete"
-            btnDelete.setAttributeNode(idAtt)
+            btnDelete.id = "btnDelete"
             btnDelete.className = "friendButton"
             btnDelete.textContent = "delete"
 
@@ -74,88 +122,109 @@ class View {
                     this.deleteFriendEvent.trigger(f.name)
                 }
             })
-//------------------------------------------------------------------------------------- confirm btn
-            const btnConfirm = document.createElement("button")
-            btnConfirm.id = "btnConfirm"
-            btnConfirm.className = "friendButton"
-            btnConfirm.textContent = "confirm date"
 
-            btnConfirm.addEventListener("click", () => {
-                if (window.confirm("do you want to confirm?")) {
-                    const params = {
-                        name: f.name,
-                        date: f.date,
-                        note: f.note
-                    }
-                    this.confirmDateEvent.trigger(params)
-                }
-            })
-//-------------------------------------------------------------------------------------
+            //------------------------------------------------------------------------------------- confirm btn
 
-            const btnShowHistory = document.createElement("button")
-            btnShowHistory.id = "showHistory"
-            btnShowHistory.className = "showBtn"
-            btnShowHistory.textContent = "show history"
+            let btnConfirm = null
 
-            btnShowHistory.addEventListener('click', () => {
+            if (new Date(f.date) <= this.#today()) {
+                btnConfirm = document.createElement("button")
+                btnConfirm.id = "btnConfirm"
+                btnConfirm.className = "friendButton"
+                btnConfirm.textContent = "confirm date"
 
-                if (btnShowHistory.className === "showBtn") {
+                elemBtns.appendChild(btnConfirm)
 
-                    if (f.history.history.length === 0){
-                        return
-                    }
-
-                    let booleanToggler= true
-
-                    for (const h of f.history.history) {
-
-                        const {date, note, state} = h
-
-                        const elem = document.createElement("div")
-                        elem.className = "containerHistory"
-                        if (booleanToggler){
-                            elem.classList.add("evenRow")
+                btnConfirm.addEventListener("click", () => {
+                    if (window.confirm("do you want to confirm?")) {
+                        const params = {
+                            name: f.name,
+                            date: f.date,
+                            note: f.note
                         }
+                        this.confirmDateEvent.trigger(params)
+                    }
+                })
+            }
 
-                        booleanToggler = !booleanToggler
+            //------------------------------------------------------------------------------------- show history
 
+            let btnShowHistory = null
 
-                        const dateBox = document.createElement("div")
-                        dateBox.textContent = "date" + date
-                        const noteBox = document.createElement("div")
-                        noteBox.textContent = "note" + note
+            // El botón de history solo si hay historial
+            if (f.history.history.length > 0) {
+
+                btnShowHistory = document.createElement("button")
+                btnShowHistory.id = "showHistory"
+                btnShowHistory.className = "showBtn"
+                btnShowHistory.textContent = "show history"
+
+                elemBtns.appendChild(btnShowHistory)
+
+                btnShowHistory.addEventListener('click', () => {
+
+                    if (btnShowHistory.className === "showBtn") {
+
+                        /*if (f.history.history.length === 0) {
+                            return
+                        }*/
+
+                        let booleanToggler = true
+
+                        for (const h of f.history.history) {
+
+                            const {date, note, state} = h
+
+                            const elem = document.createElement("div")
+                            elem.className = "containerHistory"
+                            if (booleanToggler) {
+                                elem.classList.add("evenRow")
+                            }
+
+                            booleanToggler = !booleanToggler
+
+                            const dateBox = document.createElement("div")
+                            dateBox.textContent = "date" + date
+                            const noteBox = document.createElement("div")
+                            noteBox.textContent = "note" + note
 
 
 //TODO add delete btn for elem
 
 
-                        historyBox.appendChild(elem)
+                            historyBox.appendChild(elem)
 
-                        elem.appendChild(dateBox)
-                        elem.appendChild(noteBox)
+                            elem.appendChild(dateBox)
+                            elem.appendChild(noteBox)
+                        }
+                        btnShowHistory.textContent = "hide history"
+                        btnShowHistory.className = "hideBtn"
+                    } else {
+
+                        historyBox.innerHTML = ""
+                        btnShowHistory.textContent = "show history"
+                        btnShowHistory.className = "showBtn"
+
                     }
-                    btnShowHistory.textContent = "hide history"
-                    btnShowHistory.className = "hideBtn"
-                } else {
-
-                    historyBox.innerHTML = ""
-                    btnShowHistory.textContent = "show history"
-                    btnShowHistory.className = "showBtn"
-
-                }
-            })
+                })
+            }
 
 //-------------------------------------------------------------------------------------
 
-            elem.appendChild(name)
-            elem.appendChild(date)
-            elem.appendChild(importance)
-            elem.appendChild(periodicity)
-            elem.appendChild(note)
-            elem.appendChild(historyBox)
-            elem.appendChild(btnDelete)
-            elem.appendChild(btnConfirm)
-            elem.appendChild(btnShowHistory)
+            elemData.appendChild(name)
+            elemData.appendChild(date)
+            elemData.appendChild(importance)
+            elemData.appendChild(periodicity)
+            elemData.appendChild(note)
+            elemData.appendChild(historyBox)
+
+            elemBtns.appendChild(btnUpdate)
+            elemBtns.appendChild(btnDelete)
+            if (btnConfirm) elemBtns.appendChild(btnConfirm)
+            if (btnShowHistory) elemBtns.appendChild(btnShowHistory) //Lo añado opcionalmente - solo si hay historia
+
+            elem.appendChild(elemData)
+            elem.appendChild(elemBtns)
 
             this.root.appendChild(elem)
         }
