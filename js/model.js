@@ -10,7 +10,11 @@
 class Friends {
     constructor() {
         this.friends = this.loadAll()
+        this.filterPast = false
+
         this.wereChangesEvent = new Event()
+        this.filterChangeEvent = new Event()
+        this
     }
 
     newFriend(data) {
@@ -58,7 +62,7 @@ class Friends {
 
         function addDays(date, days) {
             let result = new Date(date);
-            result.setDate(result.getDate() + days);
+            result.setDate(result.getDate() + parseInt(days));
             return result;
         }
 
@@ -74,6 +78,49 @@ class Friends {
             }
         }
     }
+
+    sortDay() {
+        const getSorted = this.friends.sort((a, b) => { return (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0) })
+        this.wereChangesEvent.trigger(this.#filterList(getSorted))
+    }
+
+    // Los operadores de comparación < hacen el efecto reverse
+    sortImportance() {
+        const getSorted = this.friends.sort((a, b) => { return (a.importance < b.importance) ? 1 : ((b.importance < a.importance) ? -1 : 0) })
+        this.wereChangesEvent.trigger(this.#filterList(getSorted))
+    }
+
+    sortName() {
+        const getSorted = this.friends.sort((a, b) => { return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0) })
+        this.wereChangesEvent.trigger(this.#filterList(getSorted))
+    }
+
+    #today() {
+        const goodDate = new Date()
+        goodDate.setHours(0, 0, 0, 0)
+        return goodDate.toISOString().substring(0, 10)
+    }
+
+    #filterList(listF) {
+        const today = this.#today()
+        //this.filterPast = !this.filterPast
+        let getFiltered
+        if (this.filterPast) {
+            getFiltered = listF.filter(friend => {
+                return friend.date >= today
+            })
+        } else {
+            getFiltered = listF
+        }
+        return getFiltered
+    }
+
+    filterPastToggle() {
+        this.filterPast = !this.filterPast
+        this.filterChangeEvent.trigger(this.filterPast) // change button status
+        this.wereChangesEvent.trigger(this.#filterList(this.friends))  // redraw
+    }
+
 //-------------------------------------------------------------------------------------
     loadAll() {
 

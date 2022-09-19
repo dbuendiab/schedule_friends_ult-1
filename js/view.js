@@ -7,10 +7,25 @@ class View {
     }
 
     newFriendFormShow(update_data = undefined) {
-        const form = document.createElement("div")
-        form.className = "new-friend"
 
-        let name = "", date = "", importance = "", periodicity = "", note = "", type="new"
+        // Salir si ya tienes un formulario abierto
+        if (document.getElementsByClassName("new-friend").length > 0) return
+        if (document.getElementsByClassName("update-friend").length > 0) return
+
+        const form = document.createElement("div")
+        form.className = (update_data? "update-friend": "new-friend")
+        form.classList.add("container-form")
+
+        let name = "",
+            //date = "",
+            importance = 50,
+            periodicity = 7,
+            note = "",
+            type="new",
+            parent=null
+
+        // Por defecto cargo una fecha a 7 días vista
+        let date = this.#todayPlusDays(periodicity)
 
         if (update_data) {
             name = update_data.name
@@ -19,27 +34,41 @@ class View {
             periodicity = update_data.periodicity
             note = update_data.note
             type = update_data.type
+            parent = update_data.parent
         }
 
         // Necesito input boxes para name, date, importance, periodicity, note
         form.innerHTML = `
-        <label>Nombre: <input type="text" id="name" ${type !== "new"? "disabled": ""} value="${name}"></label>
-        <label>Prox. cita: <input type="date" id="date" value="${date}"></label>
-        <label>Importancia: <input type="range" min="0" max="100" id="importance" value="${importance}"></label>
-        <label>Periodicidad: <input type="number" min="1" id="periodicity" value=" value="${periodicity || 7}""></label>
-        <label>Notas: <textarea id="note">${note}</textarea></label>
-        <button id="accept">Aceptar</button>
-        <button id="cancel">Cancelar</button>
-        `
-        this.root.prepend(form)
 
+            <div class="dataBox">
+                <div><input type="text" id="name" ${type !== "new"? "disabled": ""} value="${name}"></div>
+                <div><label>Prox. cita: <input type="date" id="date" value="${date}"></label></div>
+                <div><label>Importancia: <input type="range" min="0" max="100" id="importance" value="${importance}"></label></div>
+                <div><label>Periodicidad: <input type="number" min="1" id="periodicity" value="${periodicity}" style="width: 4rem;"></label></div>
+            </div>
+            <div class="dataBox">
+                <div>Notas:</div>
+                <div><textarea id="note" style="height: 100%">${note}</textarea></div>
+            </div>
+            <div class="buttonsBox">
+                <button id="accept" class="friendButton">Aceptar</button>
+                <button id="cancel" class="friendButton">Cancelar</button>
+            </div>
+
+        `
+        if (parent) {
+            parent.before(form)
+            parent.style.display = "None"
+        } else {
+            this.root.prepend(form)
+        }
         const btnAccept = document.getElementById("accept")
         btnAccept.addEventListener("click", () => {
             const data = {
                 name: document.getElementById("name").value,
                 date: document.getElementById("date").value,
-                importance: document.getElementById("importance").value,
-                periodicity: document.getElementById("periodicity").value,
+                importance: parseInt(document.getElementById("importance").value),
+                periodicity: parseInt(document.getElementById("periodicity").value),
                 note: document.getElementById("note").value
             }
             this.root.removeChild(form)
@@ -48,14 +77,48 @@ class View {
         const btnCancel = document.getElementById("cancel")
         btnCancel.addEventListener("click", () => {
             this.root.removeChild(form)
-            // newFriendModelCallback({})
+            if (parent) parent.style.display = ""
         })
     }
 
-    #today() {
+    #todayPlusDays(nDays) {
         const hoy = new Date()
         hoy.setHours(0, 0, 0, 0)
-        return hoy
+        hoy.setDate(hoy.getDate() + nDays)
+        return hoy.toISOString().substring(0, 10)
+    }
+
+    #today() {
+        return this.#getGoodDate(new Date())
+    }
+
+    #getGoodDate(date) {
+        const goodDate = new Date(date)
+        goodDate.setHours(0, 0, 0, 0)
+        return goodDate.toISOString().substring(0, 10)
+    }
+
+    #daysRemaining(date) {
+        const hoy = new Date()
+        hoy.setHours(0, 0, 0, 0)
+        const cita = new Date(date)
+        cita.setHours(0, 0, 0, 0)
+        return (cita.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)
+    }
+
+    #remainingColor(date) {
+        // Debe devolver un valor entre 0 y 100, con 50 correspondiendo al día de hoy
+        const diasPastMax = -3
+        const diasFutMax = 7
+
+        let remainingDays = this.#daysRemaining(date)
+        if (remainingDays >= diasFutMax) return 100
+        if (remainingDays <= diasPastMax) return 0
+        if (remainingDays === 0) return 50
+
+        if (remainingDays < 0) return (-remainingDays / diasPastMax + 1) * 50
+        // remainingDays > 0
+        return (remainingDays / diasFutMax + 1) * 50
     }
 
     redraw(friends) {
@@ -64,32 +127,20 @@ class View {
             this.root.removeChild(this.root.lastChild);
         }
 
-        let evenBool = false
+        const today = this.#today()
 
         for (const f of friends) {
 
             const elem = document.createElement("div")
             elem.className = "container"
-            if (evenBool) {
-                elem.classList.add("even")
-            }
-            evenBool = !evenBool
 
             const elemData = document.createElement("div")
             elemData.className = "dataBox"
+            elemData.appendChild(this.#createElemData(f))
+
             const elemBtns = document.createElement("div")
             elemBtns.className = "buttonsBox"
 
-            const name = document.createElement("div")
-            name.textContent = "Nombre: " + f.name
-            const date = document.createElement("div")
-            date.textContent = "Cita: " + f.date
-            const importance = document.createElement("div")
-            importance.textContent = "Importancia: " + f.importance
-            const periodicity = document.createElement("div")
-            periodicity.textContent = "Periodicidad: " + f.periodicity
-            const note = document.createElement("div")
-            note.textContent = "Nota: " + f.note
             const historyBox = document.createElement("div")
             //history.textContent = "Historia: " + f.history
 
@@ -106,7 +157,8 @@ class View {
                     date: f.date,
                     importance: f.importance,
                     periodicity: f.periodicity,
-                    note: f.note
+                    note: f.note,
+                    parent: elem
                 })
             })
 
@@ -127,7 +179,7 @@ class View {
 
             let btnConfirm = null
 
-            if (new Date(f.date) <= this.#today()) {
+            if (this.#getGoodDate(f.date) <= today) {
                 btnConfirm = document.createElement("button")
                 btnConfirm.id = "btnConfirm"
                 btnConfirm.className = "friendButton"
@@ -165,23 +217,12 @@ class View {
 
                     if (btnShowHistory.className === "showBtn") {
 
-                        /*if (f.history.history.length === 0) {
-                            return
-                        }*/
-
-                        let booleanToggler = true
-
                         for (const h of f.history.history) {
 
                             const {date, note, state} = h
 
                             const elem = document.createElement("div")
                             elem.className = "containerHistory"
-                            if (booleanToggler) {
-                                elem.classList.add("evenRow")
-                            }
-
-                            booleanToggler = !booleanToggler
 
                             const dateBox = document.createElement("div")
                             dateBox.textContent = "date" + date
@@ -211,11 +252,6 @@ class View {
 
 //-------------------------------------------------------------------------------------
 
-            elemData.appendChild(name)
-            elemData.appendChild(date)
-            elemData.appendChild(importance)
-            elemData.appendChild(periodicity)
-            elemData.appendChild(note)
             elemData.appendChild(historyBox)
 
             elemBtns.appendChild(btnUpdate)
@@ -228,5 +264,56 @@ class View {
 
             this.root.appendChild(elem)
         }
+    }
+
+    #createElemData(friend) {
+        const {name, date, importance, periodicity, note} = friend
+
+        // font-size entre 1 y 3; importance entre 0 y 100
+        const fontSize = (1.2 + (3 - 1.2) * importance / 100)
+        const daysRemain = this.#daysRemaining(date)
+
+        const divName = document.createElement("div")
+        divName.style.fontSize = fontSize + "rem"
+        //divName.style.marginBottom = ".3rem"
+        divName.textContent = name
+
+        let text
+        if (daysRemain < -1) {
+            text = "La cita fue hace " + -daysRemain + " días, el " + date + "."
+        }
+        if (daysRemain === -1) {
+            text = "La cita fue AYER."
+        }
+        if (daysRemain === 0) {
+            text = "La cita es HOY."
+        }
+        if (daysRemain === 1) {
+            text = "La cita es MAÑANA."
+        }
+        if (daysRemain > 1)  {
+            text = "La cita es dentro de " + daysRemain + " días, el " + date + "."
+        }
+
+        const divDay = document.createElement("span")
+        divDay.classList.add("remaining")
+        divDay.style.cssText = `--remaining: ${this.#remainingColor(date)};`
+        //divDay.style.padding = ".3rem"
+        divDay.title = "La periodicidad es cada " + periodicity + " días"
+        divDay.textContent = text
+
+        const divNote = document.createElement("div")
+        divNote.style.backgroundColor = "white"
+        //divNote.style.marginTop = ".3rem"
+        //divNote.style.padding = ".3rem"
+        divNote.textContent = note
+
+        const elem = document.createElement("div")
+        elem.className = "friend-list"
+        elem.appendChild(divName)
+        elem.appendChild(divDay)
+        elem.appendChild(divNote)
+
+        return elem
     }
 }

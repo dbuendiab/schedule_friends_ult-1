@@ -1,3 +1,9 @@
+body {
+    font-family: Verdana, sans-serif;
+    margin: 0 auto;
+    margin-left: 2.3rem;
+}
+
 nav li {
     display: inline-block;
     list-style: none;
@@ -7,21 +13,35 @@ nav li {
     cursor: pointer;
 }
 
-nav li:hover {
+nav li:hover, .filter-past {
     color: white;
     background-color: crimson;
 }
 
-.container {
+.container, .container-form {
     flex-direction: row;
     display: flex;
     background-color: beige;
     justify-content: space-between;
     align-content: space-between;
-    padding: 10px;
+    margin: .3rem;
+    padding: .5rem;
+    max-width: 800px;
 }
 
-.container.even {
+.container-form {
+    border: .3rem solid crimson;
+}
+
+.update-friend #name {
+    font-size: 2rem;
+    width: 95%;
+}
+.container-form > .dataBox > div {
+    margin: .3rem;
+}
+
+.container:nth-child(even) {
     background-color: cornsilk;
 }
 
@@ -43,9 +63,16 @@ nav li:hover {
     justify-content: space-evenly;
     align-content: space-between;
 }
-
+/*
 .dataBox {
     border: 1px solid crimson;
+}
+*/
+.remaining {
+    /*width: 5px;*/
+    background-color: hsl(calc(var(--remaining) * 1.2), 100%, 80%);
+    font-size: 1.2rem;
+
 }
 
 .buttonsBox > button {
@@ -54,22 +81,37 @@ nav li:hover {
 }
 
 .containerHistory {
-
-
-
     background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(3,255,218,1) 22%,
     rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);
 }
 
-.evenRow {
-
-
-
+.containerHistory:nth-child(even) {
     background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(188,3,255,1) 22%,
     rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);
 }
 
+.friend-list > div {
+    margin: .3rem;
+    padding: .3rem;
+}
 
+.friend-list > span {
+    display: inline-block;
+    margin: .3rem;
+    padding: .3rem;
+}
+/*
+.new-friend, .update-friend {
+    flex-direction: column;
+    display: flex;
+    background-color: beige;
+    justify-content: space-between;
+    align-content: space-between;
+    margin: .3rem;
+    padding: .5rem;
+    max-width: 800px;
+}
 
-
-
+.new-friend > div, .update-friend > div {
+    margin: .3rem;
+}*/
