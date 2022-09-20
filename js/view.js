@@ -7,6 +7,8 @@ class View {
     }
 
     newFriendFormShow(update_data = undefined) {
+        
+        alert("We go!")
 
         // Salir si ya tienes un formulario abierto
         if (document.getElementsByClassName("new-friend").length > 0) return
