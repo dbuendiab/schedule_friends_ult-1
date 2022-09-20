@@ -16,6 +16,7 @@ nav li {
 nav li:hover, .filter-past {
     color: white;
     background-color: crimson;
+    user-select: none;
 }
 
 .container, .container-form {
