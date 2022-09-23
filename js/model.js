@@ -95,10 +95,13 @@ class Friends {
         this.wereChangesEvent.trigger(this.#filterList(getSorted))
     }
 
+    // TODO: llevar esto (y versión en View) a un módulo específico aparte
     #today() {
-        const goodDate = new Date()
-        goodDate.setHours(0, 0, 0, 0)
-        return goodDate.toISOString().substring(0, 10)
+        const date = new Date()
+        const year = date.getFullYear()
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const day = date.getDate().toString().padStart(2, '0')
+        return `${year}-${month}-${day}`
     }
 
     #filterList(listF) {

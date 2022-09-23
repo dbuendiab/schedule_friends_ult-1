@@ -1,7 +1,42 @@
+:root {
+    --min-font-size: 1.2;
+    --max-font-size: 3.0;
+}
+
+@media (orientation: portrait) {
+    :root {
+        --min-font-size: 0.8;
+        --max-font-size: 2.0;
+    }
+    }
+
 body {
     font-family: Verdana, sans-serif;
     margin: 0 auto;
     margin-left: 2.3rem;
+    box-sizing: border-box;
+}
+
+h1 {
+    display: flex;
+    flex-direction: row;
+    color: rgb(124, 8, 31);
+    /*margin-left: 1rem;*/
+    margin-bottom: 0rem;
+    margin-top: 1rem;
+    justify-content: space-between;
+}
+
+@media (orientation: portrait) {
+    body {
+        margin-left: 0;
+    }
+
+    h1 {
+        margin-top: 1rem;
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
 }
 
 nav li {
@@ -13,25 +48,66 @@ nav li {
     cursor: pointer;
 }
 
+ul {
+    padding-inline-start: 0;
+}
+
+#menuIcon {
+    display: none;
+}
+
+@media (orientation: portrait) {
+    #menuIcon {
+        display: inline;
+        cursor: pointer;
+    }
+
+    nav li {
+        display: block;
+        text-align: center;
+        /*width: 150px;*/
+        margin-right: 1rem;
+    }
+
+    ul {
+        padding-inline-start: 1rem;
+        display: none;
+    }
+
+    .show-menu {
+        display: block;
+    }
+}
+
 nav li:hover, .filter-past {
     color: white;
     background-color: crimson;
-    user-select: none;
+    user-select: none;  /* Evitar efecto de selección de texto en botones en Chrome Mobile */
 }
 
+/* Los div del container se ponen en fila si viewport es landscape, y en vertical para el portrait */
 .container, .container-form {
-    flex-direction: row;
     display: flex;
-    background-color: beige;
+    flex-direction: row;
     justify-content: space-between;
     align-content: space-between;
+    background-color: beige;
+    background: linear-gradient(180deg, #ffeda7 0%, white 75%);
     margin: .3rem;
-    padding: .5rem;
+    padding: .3rem;
+    padding-left: .6rem;
     max-width: 800px;
+}
+
+@media (orientation: portrait) {
+    .container, .container-form {
+        flex-direction: column;
+    }
 }
 
 .container-form {
     border: .3rem solid crimson;
+    padding: .6rem
 }
 
 .update-friend #name {
@@ -44,6 +120,7 @@ nav li:hover, .filter-past {
 
 .container:nth-child(even) {
     background-color: cornsilk;
+    background: linear-gradient(180deg, #e3d392 0%, white 75%);
 }
 
 .container:hover {
@@ -58,22 +135,41 @@ nav li:hover, .filter-past {
     visibility: visible;
 }
 
+@media (orientation: portrait) {
+    .container .buttonsBox {
+        display: none;
+    }
+
+    .container:hover .buttonsBox {
+        display: flex;
+    }
+}
+
+
+/* Los botones son en vertical cuando el viewport es landscape y en horizontal */
 .buttonsBox {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-content: space-between;
 }
-/*
-.dataBox {
-    border: 1px solid crimson;
+
+@media (orientation: portrait) {
+    .buttonsBox {
+        flex-direction: row;
+    }
 }
-*/
+
 .remaining {
     /*width: 5px;*/
     background-color: hsl(calc(var(--remaining) * 1.2), 100%, 80%);
     font-size: 1.2rem;
+}
 
+@media (orientation: portrait) {
+    .remaining {
+        font-size: 1.0rem;
+    }
 }
 
 .buttonsBox > button {
@@ -82,13 +178,18 @@ nav li:hover, .filter-past {
 }
 
 .containerHistory {
-    background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(3,255,218,1) 22%,
-    rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);
+    margin-left: 2rem;
+    margin-bottom: .3rem;
+    padding: .3rem;
+    /*background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(3,255,218,1) 22%,
+    rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);*/
+    background: bisque;
 }
 
 .containerHistory:nth-child(even) {
-    background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(188,3,255,1) 22%,
-    rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);
+    /*background: linear-gradient(90deg, rgba(63,94,251,1) 7%, rgba(188,3,255,1) 22%,
+    rgba(153,252,70,1) 47%, rgba(70,205,252,1) 75%);*/
+    background: rgb(255 242 225);
 }
 
 .friend-list > div {
@@ -102,17 +203,31 @@ nav li:hover, .filter-past {
     padding: .3rem;
 }
 /*
-.new-friend, .update-friend {
-    flex-direction: column;
-    display: flex;
-    background-color: beige;
-    justify-content: space-between;
-    align-content: space-between;
-    margin: .3rem;
-    padding: .5rem;
-    max-width: 800px;
+.show-note {
+    background-color: white;
+}
+*/
+.friendButton {
+    background-color: white;
+    border: 1px solid crimson;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
 }
 
-.new-friend > div, .update-friend > div {
-    margin: .3rem;
-}*/
+.friendButton:hover {
+    color: white;
+    background-color: crimson;
+}
+
+.textarea {
+    height: 101px;
+    width: 370px;
+}
+
+@media (orientation: portrait) {
+    .textarea {
+        width: 100%;
+    }
+}
+

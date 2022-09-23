@@ -7,8 +7,6 @@ class View {
     }
 
     newFriendFormShow(update_data = undefined) {
-        
-        alert("We go!")
 
         // Salir si ya tienes un formulario abierto
         if (document.getElementsByClassName("new-friend").length > 0) return
@@ -43,14 +41,13 @@ class View {
         form.innerHTML = `
 
             <div class="dataBox">
-                <div><input type="text" id="name" ${type !== "new"? "disabled": ""} value="${name}"></div>
+                <div><input type="text" id="name" ${type !== "new"? "disabled": ""} value="${name}" placeholder="Nombre?"></div>
                 <div><label>Prox. cita: <input type="date" id="date" value="${date}"></label></div>
                 <div><label>Importancia: <input type="range" min="0" max="100" id="importance" value="${importance}"></label></div>
                 <div><label>Periodicidad: <input type="number" min="1" id="periodicity" value="${periodicity}" style="width: 4rem;"></label></div>
             </div>
             <div class="dataBox">
-                <div>Notas:</div>
-                <div><textarea id="note" style="height: 100%">${note}</textarea></div>
+                <div><textarea id="note" class="textarea" placeholder="Alguna nota?">${note}</textarea></div>
             </div>
             <div class="buttonsBox">
                 <button id="accept" class="friendButton">Aceptar</button>
@@ -210,14 +207,15 @@ class View {
 
                 btnShowHistory = document.createElement("button")
                 btnShowHistory.id = "showHistory"
-                btnShowHistory.className = "showBtn"
+                btnShowHistory.className = "friendButton"
+                btnShowHistory.classList.add("showBtn")
                 btnShowHistory.textContent = "show history"
 
                 elemBtns.appendChild(btnShowHistory)
 
                 btnShowHistory.addEventListener('click', () => {
 
-                    if (btnShowHistory.className === "showBtn") {
+                    if (btnShowHistory.className === "showBtn friendButton") {
 
                         for (const h of f.history.history) {
 
@@ -227,9 +225,9 @@ class View {
                             elem.className = "containerHistory"
 
                             const dateBox = document.createElement("div")
-                            dateBox.textContent = "date" + date
-                            const noteBox = document.createElement("div")
-                            noteBox.textContent = "note" + note
+                            dateBox.textContent = date + ': ' + note
+                            //const noteBox = document.createElement("div")
+                            //noteBox.textContent = "note" + note
 
 
 //TODO add delete btn for elem
@@ -238,16 +236,16 @@ class View {
                             historyBox.appendChild(elem)
 
                             elem.appendChild(dateBox)
-                            elem.appendChild(noteBox)
+                            //elem.appendChild(noteBox)
                         }
+                        btnShowHistory.classList.remove("showBtn")
+                        btnShowHistory.classList.add("hideBtn")
                         btnShowHistory.textContent = "hide history"
-                        btnShowHistory.className = "hideBtn"
                     } else {
-
                         historyBox.innerHTML = ""
+                        btnShowHistory.classList.remove("hideBtn")
+                        btnShowHistory.classList.add("showBtn")
                         btnShowHistory.textContent = "show history"
-                        btnShowHistory.className = "showBtn"
-
                     }
                 })
             }
@@ -268,21 +266,31 @@ class View {
         }
     }
 
+    // font-size entre 1 y 3; importance entre 0 y 100
+    #calcNameFontSize(importance) {
+        const minFontSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--min-font-size', 1.2))
+        const maxFontSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--max-font-size', 3.0))
+        return (minFontSize + (maxFontSize - minFontSize) * importance / 100.0)
+    }
+
     #createElemData(friend) {
-        const {name, date, importance, periodicity, note} = friend
+        const {name, date, importance, periodicity, note} = friend  
 
-        // font-size entre 1 y 3; importance entre 0 y 100
-        const fontSize = (1.2 + (3 - 1.2) * importance / 100)
-        const daysRemain = this.#daysRemaining(date)
-
+         // NAME ----
         const divName = document.createElement("div")
+        const fontSize = this.#calcNameFontSize(importance)
         divName.style.fontSize = fontSize + "rem"
-        //divName.style.marginBottom = ".3rem"
         divName.textContent = name
 
+        // DATE/PERIODICITY ----
+        const divDay = document.createElement("span")
+        divDay.classList.add("remaining")
+        divDay.style.cssText = `--remaining: ${this.#remainingColor(date)};`
+        divDay.title = "La periodicidad es cada " + periodicity + " días"
+        const daysRemain = this.#daysRemaining(date)
         let text
         if (daysRemain < -1) {
-            text = "La cita fue hace " + -daysRemain + " días, el " + date + "."
+            text = "La cita fue el " + date + ", hace " + -daysRemain + " días."
         }
         if (daysRemain === -1) {
             text = "La cita fue AYER."
@@ -294,24 +302,18 @@ class View {
             text = "La cita es MAÑANA."
         }
         if (daysRemain > 1)  {
-            text = "La cita es dentro de " + daysRemain + " días, el " + date + "."
+            text = "La cita es en " + daysRemain + " días, el " + date + "."
         }
-
-        const divDay = document.createElement("span")
-        divDay.classList.add("remaining")
-        divDay.style.cssText = `--remaining: ${this.#remainingColor(date)};`
-        //divDay.style.padding = ".3rem"
-        divDay.title = "La periodicidad es cada " + periodicity + " días"
         divDay.textContent = text
 
+        // NOTE ----
         const divNote = document.createElement("div")
-        divNote.style.backgroundColor = "white"
-        //divNote.style.marginTop = ".3rem"
-        //divNote.style.padding = ".3rem"
+        divNote.className = "show-note"
         divNote.textContent = note
 
         const elem = document.createElement("div")
         elem.className = "friend-list"
+
         elem.appendChild(divName)
         elem.appendChild(divDay)
         elem.appendChild(divNote)
