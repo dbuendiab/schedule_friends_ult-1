@@ -72,6 +72,7 @@ class Friends {
                 this.friends[i].history.add(date, note, true)
                 const intermediateProcessingDate = addDays(date, this.friends[i].periodicity)
                 this.friends[i].date = intermediateProcessingDate.toISOString().substring(0, 10)
+                this.friends[i].note = ""
                 this.saveAll()
                 this.wereChangesEvent.trigger(this.getAll())
                 break
