@@ -136,7 +136,8 @@ class View {
 
             const elemData = document.createElement("div")
             elemData.className = "dataBox"
-            elemData.appendChild(this.#createElemData(f))
+            const {elemNode, noteNode} = this.#createElemData(f)
+            elemData.appendChild(elemNode)
 
             const elemBtns = document.createElement("div")
             elemBtns.className = "buttonsBox"
@@ -188,13 +189,14 @@ class View {
                 elemBtns.appendChild(btnConfirm)
 
                 btnConfirm.addEventListener("click", () => {
-                    if (window.confirm("do you want to confirm?")) {
+                    if (window.confirm("do you want to confirm?")) { 
                         const params = {
                             name: f.name,
                             date: f.date,
                             note: f.note
                         }
                         this.confirmDateEvent.trigger(params)
+                        noteNode.textContent = ""
                     }
                 })
             }
@@ -216,7 +218,7 @@ class View {
 
                 btnShowHistory.addEventListener('click', () => {
 
-                    if (btnShowHistory.className === "showBtn friendButton") {
+                    if (btnShowHistory.classList.contains("showBtn")) {
 
                         for (const h of f.history.history) {
 
@@ -231,8 +233,8 @@ class View {
                             //noteBox.textContent = "note" + note
 
 
-//TODO add delete btn for elem
-
+// TODO add delete btn for elem
+// TODO add update btn for elem
 
                             historyBox.appendChild(elem)
 
@@ -319,6 +321,7 @@ class View {
         elem.appendChild(divDay)
         elem.appendChild(divNote)
 
-        return elem
+        // Tengo que devolver también el noteNode para poder resetearlo al confirmar
+        return {elemNode: elem, noteNode: divNote}
     }
 }
