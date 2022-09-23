@@ -87,6 +87,7 @@ class View {
         return hoy.toISOString().substring(0, 10)
     }
 
+    // TODO Extract to file apart the date functions
     #today() {
         return this.#getGoodDate(new Date())
     }
