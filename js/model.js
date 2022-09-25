@@ -10,11 +10,23 @@
 class Friends {
     constructor() {
         this.friends = this.loadAll()
-        this.filterPast = false
+        this.filterFunc = null
+        this.sortFunc = null
+        this.searchFunc = null
+
+        this.filterFuncs = {
+            "no-past": friend => (friend.date >= this.#today()),
+            "past": friend => (friend.date < this.#today())
+        }
+
+        this.sortFuncs = {
+            "date": (a, b) => { return (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0) },
+            "name": (a, b) => { return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0) },
+            "importance": (a, b) => { return (a.importance < b.importance) ? 1 : ((b.importance < a.importance) ? -1 : 0) }
+        }
 
         this.wereChangesEvent = new Event()
         this.filterChangeEvent = new Event()
-        this
     }
 
     newFriend(data) {
@@ -31,7 +43,7 @@ class Friends {
         }
         this.saveAll()
 
-        this.wereChangesEvent.trigger(this.getAll())
+        this.wereChangesEvent.trigger(this.getFriends())
     }
 
     exists(name) {
@@ -43,7 +55,8 @@ class Friends {
         return null
     }
 
-//----------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------
+
     deleteFriend(name) {
 
         for (let i = 0; i < this.friends.length; i++) {
@@ -51,13 +64,14 @@ class Friends {
 
                 this.friends.splice(i, 1)
                 this.saveAll()
-                this.wereChangesEvent.trigger(this.getAll())
+                this.wereChangesEvent.trigger(this.getFriends())
                 break
             }
         }
     }
 
-//-------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------
+
     confirmDate(params) {
 
         function addDays(date, days) {
@@ -74,26 +88,79 @@ class Friends {
                 this.friends[i].date = intermediateProcessingDate.toISOString().substring(0, 10)
                 this.friends[i].note = ""
                 this.saveAll()
-                this.wereChangesEvent.trigger(this.getAll())
+                this.wereChangesEvent.trigger(this.getFriends())
                 break
             }
         }
     }
 
+    // ------------------------------------------------------------------------
+
     sortDay() {
-        const getSorted = this.friends.sort((a, b) => { return (a.date > b.date) ? 1 : ((b.date > a.date) ? -1 : 0) })
-        this.wereChangesEvent.trigger(this.#filterList(getSorted))
+    // Los operadores de comparación < hacen el efecto reverse
+        this.sortFunc = "date"
+        this.wereChangesEvent.trigger(this.getFriends())
     }
 
-    // Los operadores de comparación < hacen el efecto reverse
     sortImportance() {
-        const getSorted = this.friends.sort((a, b) => { return (a.importance < b.importance) ? 1 : ((b.importance < a.importance) ? -1 : 0) })
-        this.wereChangesEvent.trigger(this.#filterList(getSorted))
+        this.sortFunc = "importance"
+        this.wereChangesEvent.trigger(this.getFriends())
     }
 
     sortName() {
-        const getSorted = this.friends.sort((a, b) => { return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0) })
-        this.wereChangesEvent.trigger(this.#filterList(getSorted))
+        this.sortFunc = "name"
+        this.wereChangesEvent.trigger(this.getFriends())
+    }
+
+    sortClear() {
+        this.sortFunc = null
+        this.wereChangesEvent.trigger(this.getFriends())
+    }
+
+    // ------------------------------------------------------------------------
+
+    filterNoPast() {
+        this.filterFunc = "no-past"
+        this.wereChangesEvent.trigger(this.getFriends())
+    }
+
+    filterPast() {
+        this.filterFunc = "past"
+        this.wereChangesEvent.trigger(this.getFriends())
+    }
+
+    filterNone() {
+        this.filterFunc = null
+        this.wereChangesEvent.trigger(this.getFriends())
+    }
+
+    // Busca en la nota y en el histórico
+    search(text) {
+        this.searchFunc = (friend) => {
+            const searchText = this.#normalize(text)
+            const target = this.#normalize(friend.note)
+            if (target.includes(searchText)) {
+                return true
+            }
+            for(const h of friend.history.history) {
+                const hTarget = this.#normalize(h.note)
+                if (hTarget.includes(searchText)) {
+                    return true
+                }
+            }
+            return false
+        }
+        this.wereChangesEvent.trigger(this.getFriends())
+    }
+
+    #normalize(text) {
+        return text.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "")
+    }
+
+    reset() {
+        this.sortFunc = null
+        this.filterFunc = null
+        this.wereChangesEvent.trigger(this.getFriends())
     }
 
     // TODO: llevar esto (y versión en View) a un módulo específico aparte
@@ -105,24 +172,19 @@ class Friends {
         return `${year}-${month}-${day}`
     }
 
-    #filterList(listF) {
-        const today = this.#today()
-        //this.filterPast = !this.filterPast
-        let getFiltered
-        if (this.filterPast) {
-            getFiltered = listF.filter(friend => {
-                return friend.date >= today
-            })
-        } else {
-            getFiltered = listF
+    getFriends() {
+        let friends = this.friends;
+        if (this.searchFunc) {
+            friends = friends.filter(this.searchFunc)
+            this.searchFunc = null
         }
-        return getFiltered
-    }
-
-    filterPastToggle() {
-        this.filterPast = !this.filterPast
-        this.filterChangeEvent.trigger(this.filterPast) // change button status
-        this.wereChangesEvent.trigger(this.#filterList(this.friends))  // redraw
+        if (this.filterFunc) {
+            friends = friends.filter(this.filterFuncs[this.filterFunc])
+        }
+        if (this.sortFunc) {
+            friends = friends.sort(this.sortFuncs[this.sortFunc])
+        }
+        return friends
     }
 
 //-------------------------------------------------------------------------------------
@@ -142,11 +204,9 @@ class Friends {
         }
         return friends;
     }
+
     saveAll() {
         localStorage.setItem("friends", JSON.stringify(this.friends))
-    }
-    getAll() {
-        return this.friends
     }
 }
 

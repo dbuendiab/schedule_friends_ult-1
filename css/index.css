@@ -1,0 +1,155 @@
+@media screen and (max-width: 700px) {
+    :root {
+        --min-font-size: 0.8rem;
+        --max-font-size: 2.0rem;
+    }
+
+    body {
+        font-family: Verdana, sans-serif;
+        font-size: var(--min-font-size);
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+    
+    h1 {
+        display: flex;
+        flex-direction: row;
+        color: rgb(124, 8, 31);
+        margin-left: 1rem;
+        margin-bottom: 0rem;
+        margin-top: 1rem;
+        justify-content: flex-start;
+    }
+
+    #menuIcon {
+        margin-right: 1rem;
+        cursor: pointer;
+    }
+
+    nav {
+        display: none;
+        position: fixed;
+        top: 3.4rem;
+        left: 4.4rem;
+        background: grey;
+        box-shadow: -2px 4px 20px 2px grey;
+    }
+
+    #submnuSort.hide-menu,
+    #submnuFilter.hide-menu {
+        display: none;
+    }
+
+    #submnuSort.show-menu,
+    #submnuFilter.show-menu,
+    .show-menu {
+        display: block;
+    }
+
+    ul#menuList {
+        margin-block-start: 0rem;
+        margin-block-end: 0rem;
+        margin-inline-start: -2.5rem;
+    }
+
+    li {
+        border: 1px solid black;
+        background: linear-gradient(270deg, rgba(220, 20, 60, 1) 15%, rgb(255 255 255 / 100%) 80%);
+        color: rgb(124, 8, 31);
+        border-radius: 5px;
+        padding: 10px;
+        list-style-type: none;
+        cursor: pointer;
+        user-select: none;
+    }
+
+/********************************************/
+
+    .container, .container-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: space-between;
+        background-color: beige;
+        background: linear-gradient(180deg, #ffeda7 0%, white 75%);
+        margin: .3rem;
+        padding: .3rem;
+        padding-left: .6rem;
+        max-width: 800px;
+    }
+
+    .friend-name {
+        margin-bottom: .3rem;
+    }
+
+    .remaining {
+        background-color: hsl(calc(var(--remaining) * 1.2), 100%, 80%);
+        font-size: 1.0rem;
+    }
+
+    .show-note {
+        margin: .8rem;
+    }
+    
+    .friend-history {
+        margin: .3rem .8rem;
+    }
+    
+    .history-note {
+        margin-bottom: .2rem;
+    }
+
+    .friendButton {
+        background-color: white;
+        border: 1px solid crimson;
+        border-radius: 5px;
+        padding: 5px;
+        cursor: pointer;
+    }
+    
+    .friendButton:hover {
+        color: white;
+        background-color: crimson;
+    }
+
+    /* Los botones son en vertical cuando el viewport es landscape y en horizontal */
+    .buttonsBox {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-content: space-between;
+    }
+
+    .buttonsBox > button {
+        margin: 5px;
+        width: 150px;
+    }
+    
+    .container .buttonsBox {
+        display: none;
+    }
+
+    .container:hover .buttonsBox {
+        display: flex;
+        flex-direction: row;
+
+    }
+    .container-form {
+        border: .3rem solid crimson;
+        padding: .6rem
+    }
+    
+    .update-friend #name {
+        font-size: 2rem;
+        width: 95%;
+    }
+    .container-form > .dataBox > div {
+        margin: .3rem;
+    }
+    
+    .container:nth-child(even) {
+        background-color: cornsilk;
+        background: linear-gradient(180deg, #e3d392 0%, white 75%);
+    }
+    
+}

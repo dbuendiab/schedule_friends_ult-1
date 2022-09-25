@@ -2,34 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Friends App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/main.css">
-    <script src="js/event.js"></script>
-    <script src="js/model.js"></script>
-    <script src="js/view.js"></script>
-    <script src="js/control.js"></script>
-
+    <link rel="stylesheet" href="css/index.css">
+    <script defer src="js/event.js"></script>
+    <script defer src="js/model.js"></script>
+    <script defer src="js/view.js"></script>
+    <script defer src="js/control.js"></script>
+    <script defer src="js/main.js"></script>
 </head>
 <body>
 <header>
-    <h1><div>MVC Friends</div><div id="menuIcon">☰</div></h1>
+    <h1><div id="menuIcon">☰</div><div>MVC Friends</div></h1>
     <nav>
-        
         <ul id="menuList">
-            <li id="mnuNewFriend">New Friend</li>
-            <li id="mnuSortName">Sort By Name</li>
-            <li id="mnuSortDay">Sort By Day</li>
-            <li id="mnuSortImportance">By Importance</li>
-            <li id="mnuFilterPast">Filter Past</li>
+            <li id="mnuNewFriend" class="mainMenu">New Friend</li>
+
+            <li id="mnuSort" class="mainMenu">Sort
+                <ul id="submnuSort" class="hide-menu">
+                    <li id="mnuSortDay">By Date</li>
+                    <li id="mnuSortName">By Name</li>
+                    <li id="mnuSortImportance">By Importance</li>
+                </ul>
+            </li>
+        
+            <li id="mnuFilter" class="mainMenu">Filter 
+                <ul id="submnuFilter" class="hide-menu">
+                    <li id="filterNoPast">Only Today+Future</li>
+                    <li id="filterPast">Only Past</li>
+                    <li id="filterNone">No Filter</li>
+                </ul>
+            </li>
+
+            <li id="mnuSearch" class="mainMenu"><input type="text" id="searchStr" placeholder="Search by..."></li>
+
+            <li id="mnuReset" class="mainMenu">Reset</li>
         </ul>
+       
     </nav>
 </header>
+
 <div id="root"></div>
-<script>
-    const app = new Controller()
-    app.run()
-</script>
+
 </body>
 </html>

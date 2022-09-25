@@ -27,18 +27,10 @@ h1 {
     justify-content: space-between;
 }
 
-@media (orientation: portrait) {
-    body {
-        margin-left: 0;
-    }
-
-    h1 {
-        margin-top: 1rem;
-        margin-left: 2rem;
-        margin-right: 2rem;
-    }
+#menuIcon {
+    display: none;
 }
-
+/*
 nav li {
     display: inline-block;
     list-style: none;
@@ -52,20 +44,9 @@ ul {
     padding-inline-start: 0;
 }
 
-#menuIcon {
-    display: none;
-}
-
-@media (orientation: portrait) {
-    #menuIcon {
-        display: inline;
-        cursor: pointer;
-    }
-
     nav li {
         display: block;
         text-align: center;
-        /*width: 150px;*/
         margin-right: 1rem;
     }
 
@@ -74,16 +55,61 @@ ul {
         display: none;
     }
 
-    .show-menu {
-        display: block;
-    }
+*/
+
+li {
+    border: 1px solid crimson;
+    border-radius: 5px;
+    padding: 10px;
+    list-style-type: none;
+    cursor: pointer;
+    user-select: none;
 }
 
-nav li:hover, .filter-past {
+
+#menuList {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+
+
+
+nav {
+    max-width: 800px;
+}
+
+.mainMenu {
+    width: 15%;
+    text-align: center;
+}
+
+.mainMenu:hover {
     color: white;
     background-color: crimson;
-    user-select: none;  /* Evitar efecto de selección de texto en botones en Chrome Mobile */
 }
+
+.hide-submenu {
+    display: none;
+}
+
+.show-submenu {
+    display: flex;
+    flex-direction: column;
+}
+
+#searchStr {
+    width: 90%;
+}
+
+
+
+
+
+
+
 
 /* Los div del container se ponen en fila si viewport es landscape, y en vertical para el portrait */
 .container, .container-form {
@@ -99,11 +125,6 @@ nav li:hover, .filter-past {
     max-width: 800px;
 }
 
-@media (orientation: portrait) {
-    .container, .container-form {
-        flex-direction: column;
-    }
-}
 
 .container-form {
     border: .3rem solid crimson;
@@ -122,6 +143,7 @@ nav li:hover, .filter-past {
     background-color: cornsilk;
     background: linear-gradient(180deg, #e3d392 0%, white 75%);
 }
+
 
 .container:hover {
     background-color: antiquewhite;
@@ -154,11 +176,6 @@ nav li:hover, .filter-past {
     align-content: space-between;
 }
 
-@media (orientation: portrait) {
-    .buttonsBox {
-        flex-direction: row;
-    }
-}
 
 .remaining {
     /*width: 5px;*/
@@ -166,11 +183,6 @@ nav li:hover, .filter-past {
     font-size: 1.2rem;
 }
 
-@media (orientation: portrait) {
-    .remaining {
-        font-size: 1.0rem;
-    }
-}
 
 .buttonsBox > button {
     margin: 5px;
@@ -194,21 +206,6 @@ nav li:hover, .filter-past {
     background: linear-gradient(180deg, rgb(255 242 225) 90%, bisque 100%);
 }
 
-.friend-list > div {
-    margin: .3rem;
-    padding: .3rem;
-}
-
-.friend-list > span {
-    display: inline-block;
-    margin: .3rem;
-    padding: .3rem;
-}
-/*
-.show-note {
-    background-color: white;
-}
-*/
 .friendButton {
     background-color: white;
     border: 1px solid crimson;

@@ -1,6 +1,9 @@
 class View {
     constructor(parent) {
         this.root = parent
+
+        this.resetMainMenuEvent = new Event()
+
         this.newFriendAddedEvent = new Event()
         this.deleteFriendEvent = new Event()
         this.confirmDateEvent = new Event()
@@ -11,6 +14,10 @@ class View {
         // Salir si ya tienes un formulario abierto
         if (document.getElementsByClassName("new-friend").length > 0) return
         if (document.getElementsByClassName("update-friend").length > 0) return
+
+        // Si NEW: reset main menú; si UPDATE, NO
+        if (!update_data)
+            this.resetMainMenuEvent.trigger()
 
         const form = document.createElement("div")
         form.className = (update_data? "update-friend": "new-friend")
@@ -139,11 +146,12 @@ class View {
             const {elemNode, noteNode} = this.#createElemData(f)
             elemData.appendChild(elemNode)
 
+            const history = document.createElement("div")
+            history.className = "friend-history"
+            elemData.appendChild(history)
+
             const elemBtns = document.createElement("div")
             elemBtns.className = "buttonsBox"
-
-            const historyBox = document.createElement("div")
-            //history.textContent = "Historia: " + f.history
 
             //----------------------------------------------------------------------------------- update btn
             const btnUpdate = document.createElement("button")
@@ -225,27 +233,19 @@ class View {
                             const {date, note, state} = h
 
                             const elem = document.createElement("div")
-                            elem.className = "containerHistory"
-
-                            const dateBox = document.createElement("div")
-                            dateBox.textContent = date + ': ' + note
-                            //const noteBox = document.createElement("div")
-                            //noteBox.textContent = "note" + note
-
+                            elem.className = "history-note"
+                            elem.innerHTML = "<b>" + date + '</b>:<br>' + note
 
 // TODO add delete btn for elem
 // TODO add update btn for elem
 
-                            historyBox.appendChild(elem)
-
-                            elem.appendChild(dateBox)
-                            //elem.appendChild(noteBox)
+                            history.appendChild(elem)
                         }
                         btnShowHistory.classList.remove("showBtn")
                         btnShowHistory.classList.add("hideBtn")
                         btnShowHistory.textContent = "hide history"
                     } else {
-                        historyBox.innerHTML = ""
+                        history.innerHTML = ""
                         btnShowHistory.classList.remove("hideBtn")
                         btnShowHistory.classList.add("showBtn")
                         btnShowHistory.textContent = "show history"
@@ -254,8 +254,6 @@ class View {
             }
 
 //-------------------------------------------------------------------------------------
-
-            elemData.appendChild(historyBox)
 
             elemBtns.appendChild(btnUpdate)
             elemBtns.appendChild(btnDelete)
@@ -281,6 +279,7 @@ class View {
 
          // NAME ----
         const divName = document.createElement("div")
+        divName.classList.add("friend-name")
         const fontSize = this.#calcNameFontSize(importance)
         divName.style.fontSize = fontSize + "rem"
         divName.textContent = name
@@ -289,25 +288,25 @@ class View {
         const divDay = document.createElement("span")
         divDay.classList.add("remaining")
         divDay.style.cssText = `--remaining: ${this.#remainingColor(date)};`
-        divDay.title = "La periodicidad es cada " + periodicity + " días"
+        divDay.title = "La periodicidad (Δ) es cada " + periodicity + " días"
         const daysRemain = this.#daysRemaining(date)
         let text
         if (daysRemain < -1) {
-            text = "La cita fue el " + date + ", hace " + -daysRemain + " días."
+            text = "Hace " + -daysRemain + " días (" + date + ")"
         }
         if (daysRemain === -1) {
-            text = "La cita fue AYER."
+            text = "AYER (" + date + ")"
         }
         if (daysRemain === 0) {
-            text = "La cita es HOY."
+            text = "HOY (" + date + ")"
         }
         if (daysRemain === 1) {
-            text = "La cita es MAÑANA."
+            text = "MAÑANA (" + date + ")"
         }
         if (daysRemain > 1)  {
-            text = "La cita es en " + daysRemain + " días, el " + date + "."
+            text = "En " + daysRemain + " días (" + date + ")"
         }
-        divDay.textContent = text
+        divDay.textContent = text + " +" + periodicity + "d"
 
         // NOTE ----
         const divNote = document.createElement("div")
@@ -315,7 +314,7 @@ class View {
         divNote.textContent = note
 
         const elem = document.createElement("div")
-        elem.className = "friend-list"
+        elem.className = "friend-info"
 
         elem.appendChild(divName)
         elem.appendChild(divDay)
